@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ivey Alumni Events Calendar</title>
+<style>
+  :root { --bg:#fbfaf7; --fg:#1d2422; --muted:#5d6764; --accent:#034638; --card:#fff; --line:#e3e0d8; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#121615; --fg:#e8ece9; --muted:#9aa5a1; --accent:#5fc3a6; --card:#1a201e; --line:#2a322f; } }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  main { max-width:640px; margin:0 auto; padding:40px 16px 64px; }
+  h1 { font-size:1.6rem; margin:0 0 4px; } .sub { color:var(--muted); margin:0 0 28px; }
+  .link { display:flex; gap:8px; margin:0 0 28px; }
+  .link input { flex:1; min-width:0; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--fg); font:14px ui-monospace,monospace; }
+  button { padding:10px 14px; border:0; border-radius:8px; background:var(--accent); color:#fff; font-weight:600; cursor:pointer; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:0 0 14px; }
+  h2 { font-size:1rem; margin:0 0 6px; } ol { margin:0; padding-left:20px; } li { margin:2px 0; }
+  a { color:var(--accent); } small { color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Ivey Alumni Events</h1>
+  <p class="sub">Every event from the <a href="https://www.ivey.uwo.ca/alumni/events/calendar/">Ivey Alumni calendar</a>, as a calendar you can subscribe to. It refreshes automatically every day.</p>
+
+  <div class="link">
+    <input id="url" readonly aria-label="Calendar link">
+    <button id="copy">Copy</button>
+  </div>
+
+  <section>
+    <h2>Google Calendar</h2>
+    <ol>
+      <li>On a computer, open Google Calendar.</li>
+      <li>Next to "Other calendars", click <b>+</b> then <b>From URL</b>.</li>
+      <li>Paste the link above and click <b>Add calendar</b>.</li>
+    </ol>
+  </section>
+  <section>
+    <h2>Outlook (including your Ivey email)</h2>
+    <ol>
+      <li>In Outlook on the web, open Calendar and choose <b>Add calendar</b>.</li>
+      <li>Pick <b>Subscribe from web</b>, paste the link, name it, and click <b>Import</b>.</li>
+    </ol>
+  </section>
+  <section>
+    <h2>iPhone / Apple Calendar</h2>
+    <ol>
+      <li><a id="webcal" href="#">Tap here to subscribe</a>, or go to Settings → Calendar → Accounts → Add Subscribed Calendar and paste the link.</li>
+    </ol>
+  </section>
+  <p><small>Unofficial feed built from Ivey's public events page. Last refreshed: <span id="upd">—</span>. Calendar apps check for changes every few hours (Google can take up to a day).</small></p>
+</main>
+<script>
+  const ics = new URL('ivey-alumni-events.ics', location.href).href;
+  document.getElementById('url').value = ics;
+  document.getElementById('webcal').href = ics.replace(/^https?:/, 'webcal:');
+  document.getElementById('copy').onclick = async () => {
+    try { await navigator.clipboard.writeText(ics); } catch (e) { const i = document.getElementById('url'); i.select(); document.execCommand('copy'); }
+    document.getElementById('copy').textContent = 'Copied';
+  };
+  fetch('last-updated.txt').then(r => r.ok ? r.text() : '').then(t => { if (t) document.getElementById('upd').textContent = t.trim(); }).catch(() => {});
+</script>
+</body>
+</html>
